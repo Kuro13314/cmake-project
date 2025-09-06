@@ -3,213 +3,87 @@
 #include <stdio.h>
 #include <GL/glut.h>
 
-LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
-void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);
-void DisableOpenGL(HWND, HDC, HGLRC);
-void sq(float x1, float y1, float x2, float y2, float r, float g, float b);
+///glut 상수들은 glut.h의 232번줄부터 있다.
 
+float angle=0.0;
+float r=0.0,g=0.0,b=0.0;
 
+void renderscene(void) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE hPrevInstance,
-                   LPSTR lpCmdLine,
-                   int nCmdShow)
-{
-    WNDCLASSEX wcex;
-    HWND hwnd;
-    HDC hDC;
-    HGLRC hRC;
-    MSG msg;
-    BOOL bQuit = FALSE;
-    float theta = 0.0f;
+    glPushMatrix();
 
-    /* register window class */
-    wcex.cbSize = sizeof(WNDCLASSEX);
-    wcex.style = CS_OWNDC;
-    wcex.lpfnWndProc = WindowProc;
-    wcex.cbClsExtra = 0;
-    wcex.cbWndExtra = 0;
-    wcex.hInstance = hInstance;
-    wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    wcex.lpszMenuName = NULL;
-    wcex.lpszClassName = "GLSample";
-    wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);;
+    glRotatef(angle,0.0,1.0,0.0);
 
+    glColor3f(1.0,1.0,1.0);
 
-    if (!RegisterClassEx(&wcex))
-        return 0;
-
-    /* create main window */
-    hwnd = CreateWindowEx(0,
-                          "GLSample",//style
-                          "opengl project",//title
-                          WS_OVERLAPPEDWINDOW,
-                          CW_USEDEFAULT,
-                          CW_USEDEFAULT,
-                          600,
-                          600,
-                          NULL,
-                          NULL,
-                          hInstance,
-                          NULL);
-
-    ShowWindow(hwnd, nCmdShow);
-
-    /* enable OpenGL for the window */
-    EnableOpenGL(hwnd, &hDC, &hRC);
-
-    /* program main loop */
-
-    int turn=0,xd=1,yd=1;
-    float r=1,g=0,b=0,
-    t=1,
-    rt=1.0f,
-    x=0.0f,y=-0.5f,
-    size=0.25f,
-    speed=0.01f;
-    while (!bQuit)
-    {
-        /* check for messages */
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-        {
-            /* handle or dispatch messages */
-            if (msg.message == WM_QUIT)
-            {
-                bQuit = TRUE;
-            }
-            else
-            {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
-        }
-        else
-        {
-            /* OpenGL animation code goes here */
-
-            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);//background color
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            glPushMatrix();
-//            glRotatef(theta, 0.0f, 0.0f, 1.0f);//rotate
-//            glTranslatef(0.1f, 0.1f,0.f);
-
-            //background
-            sq(-1.0f,0.6f,0.6f,0.4f,1.0f,0.0f,0.0f);
-            sq(1.0f,0.0f,-0.6f,-0.2f,1.0f,0.0f,0.0f);
-            sq(-1.0f,-0.6f,0.6f,-0.8f,1.0f,0.0f,0.0f);
-            //player
-            sq(-1.0f, 1.0f, -0.8f, 0.8f, 0.0f, 1.0f, 0.0f);
-
-            glPopMatrix();
-
-            SwapBuffers(hDC);
-
-            theta += 1.0f*rt;
-
-            printf("%f %f %f %d\n",r,g,b,turn);
-
-            x+=speed*xd;
-            if(x+size>=1.0f||x<=-1.0f){
-                xd*=-1;
-                turn=(turn+1)%6;
-            }
-            y+=speed*yd;
-            if(y+size>=1.0f||y<=-1.0f){
-                yd*=-1;
-                turn=(turn+1)%6;
-            }
-
-            switch(turn){
-            case 0:
-                r=1;
-                g=0;
-                b=0;
-                break;
-            case 1:
-                r=1;
-                g=1;
-                b=0;
-                break;
-            case 2:
-                r=0;
-                g=1;
-                b=0;
-                break;
-            case 3:
-                r=0;
-                g=1;
-                b=1;
-                break;
-            case 4:
-                r=0;
-                g=0;
-                b=1;
-                break;
-            case 5:
-                r=1;
-                g=0;
-                b=1;
-                break;
-            }
-
-            Sleep(t);//delay t(ms)
-        }
-    }
-
-    /* shutdown OpenGL */
-    DisableOpenGL(hwnd, hDC, hRC);
-
-    /* destroy the window explicitly */
-    DestroyWindow(hwnd);
-
-    return msg.wParam;
-}
-
-void sq(float x1, float y1, float x2, float y2, float r, float g, float b){
     glBegin(GL_QUADS);
-
-    glColor3f(r,g,b); glVertex2f(x1,y1);
-    glColor3f(r,g,b); glVertex2f(x1,y2);
-    glColor3f(r,g,b); glVertex2f(x2,y2);
-    glColor3f(r,g,b); glVertex2f(x2,y1);
-
+        glVertex3f( 2.0, 2.0,0.0);
+        glVertex3f( 2.0,-2.0,0.0);
+        glVertex3f(-2.0,-2.0,0.0);
+        glVertex3f(-2.0, 2.0,0.0);
     glEnd();
+
+    glPopMatrix();
+
+    glutSwapBuffers();
+
+//    angle+=0.1;
 }
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg)
-    {
-        case WM_CLOSE:
-            PostQuitMessage(0);
-        break;
+void changesize(int w, int h) {
+    if(h==0) h=1;
+    float ratio= 1.0* w / h;
 
-        case WM_DESTROY:
-            return 0;
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
 
-        case WM_KEYDOWN:
-        {
-            switch (wParam)
-            {
-                case VK_ESCAPE:
-                    PostQuitMessage(0);
-                break;
-            }
-        }
-        break;
+    glViewport(0,0,w,h);
 
-        default:
-            return DefWindowProc(hwnd, uMsg, wParam, lParam);
-    }
-
-    return 0;
+    gluPerspective(45,ratio,1,1000);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0.0,0.0,5.0,
+              0.0,0.0,0.0,
+              0.0,1.0,0.0);
 }
 
-void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC)
-{
+void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌표
+    if(key==27)//ESC
+        exit(0);
+    if(key=='1')
+        if(r==0.0) r=1.0;
+        else r=0.0;
+    if(key=='2')
+        if(b==0.0) b=1.0;
+        else b=0.0;
+    if(key=='3')
+        if(g==0.0) g=1.0;
+        else g=0.0;
+
+}
+
+void main(int argc, char **argv) {
+    glutInit(&argc, argv);//초기화
+
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);//이중 버퍼, RGB색상 사용(작성 시 "or 연산" 사용)
+
+    glutInitWindowPosition(300,100);//왼쪽 위 기준 가로 100, 세로 100 떨어진곳에 창의 온쪽 위가 위치
+    glutInitWindowSize(320,320);//창의 크기(가로, 세로)
+    glutCreateWindow("GLUT Practice");//창 만들기(제목)
+
+    glutDisplayFunc(renderscene);//렌더링할 함수를 설정
+    glutIdleFunc(renderscene);//idle 상태일 때 렌더링할 함수
+
+    glutKeyboardFunc(pnk);
+
+    glutReshapeFunc(changesize);//창의 크기가 바뀌었을 때, 어떻게 할 것인가를 설정
+
+    glEnable(GL_DEPTH_TEST);
+    glutMainLoop();//이벤트가 생길때까지 루프
+}
+
+void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC) {
     PIXELFORMATDESCRIPTOR pfd;
 
     int iFormat;
@@ -239,8 +113,7 @@ void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC)
     wglMakeCurrent(*hDC, *hRC);
 }
 
-void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC)
-{
+void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC) {
     wglMakeCurrent(NULL, NULL);
     wglDeleteContext(hRC);
     ReleaseDC(hwnd, hDC);
