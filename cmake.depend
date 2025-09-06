@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1756633891 source:c:\users\c3dongtan\dimigo-project\cmake\main.c
+	<windows.h>
+	<gl/gl.h>
+	<stdio.h>
+
+1756633891 source:c:\users\c3dongtan\dimigo-project\project\main.c
+	<windows.h>
+	<gl/gl.h>
+	<stdio.h>
+
