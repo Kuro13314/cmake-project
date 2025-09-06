@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <gl/gl.h>
 #include <stdio.h>
+#include <GL/glut.h>
 
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);
