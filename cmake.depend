@@ -4,13 +4,13 @@
 	<gl/gl.h>
 	<stdio.h>
 
-1757151141 source:c:\users\c3dongtan\dimigo-project\project\main.c
+1757229982 source:c:\users\c3dongtan\dimigo-project\project\main.c
 	<windows.h>
 	<gl/gl.h>
 	<stdio.h>
 	<GL/glut.h>
 
-1756818473 c:\program files\codeblocks\mingw\include\gl\glut.h
+1757152698 c:\program files\codeblocks\mingw\include\gl\glut.h
 	<windows.h>
 	<GL/gl.h>
 	<GL/glu.h>
