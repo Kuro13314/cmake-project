@@ -67,6 +67,16 @@ void sq(float x, float y, int color){
     glEnd();
 }
 
+void idle(void){
+    glColor3f(0.0,1.0,1.0);
+    glBegin(GL_QUADS);
+    glVertex3f(-1.0, -1.0, 0.0);
+    glVertex3f( 1.0, -1.0, 0.0);
+    glVertex3f( 1.0,  1.0, 0.0);
+    glVertex3f(-1.0,  1.0, 0.0);
+    glEnd();
+}
+
 void renderscene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -100,6 +110,7 @@ void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌
         exit(0);
         break;
     case 'r':
+    case 'R':
         turn=1;
         p[0]=0;
         p[1]=9;
@@ -109,24 +120,28 @@ void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌
     if(cl) return;
     switch(key){//게임이 끝나면 할 수 없는 행동들
     case 'w':
+    case 'W':
         p[1]++;
         if(p[1]>=ms) p[1]=ms-1;
         if(state[p[0]][p[1]]==-1) p[1]--;
         turn++;
         break;
     case 'a':
+    case 'A':
         p[0]--;
         if(p[0]<0) p[0]=0;
         if(state[p[0]][p[1]]==-1) p[0]++;
         turn++;
         break;
     case 's':
+    case 'S':
         p[1]--;
         if(p[1]<0) p[1]=0;
         if(state[p[0]][p[1]]==-1) p[1]++;
         turn++;
         break;
     case 'd':
+    case 'D':
         p[0]++;
         if(p[0]>=ms) p[0]=ms-1;
         if(state[p[0]][p[1]]==-1) p[0]--;
@@ -169,12 +184,12 @@ int main(int argc, char **argv) {
 
             go.push({dx+x,dy+y,d+1});
         }
-    }w
+    }
 
 
     glutInit(&argc, argv);//초기화
 
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);//이중 버퍼, RGB색상 사용(작성 시 "or 연산" 사용)
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);//이중 버퍼, RGB색상, 깊이 버퍼 사용 (작성 시 "or 연산" 사용)
 
     glutInitWindowPosition(300,100);//왼쪽 위 기준 가로 100, 세로 100 떨어진곳에 창의 온쪽 위가 위치
     glutInitWindowSize(320,320);//창의 크기(가로, 세로)
