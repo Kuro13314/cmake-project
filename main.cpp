@@ -1,21 +1,33 @@
 #include <windows.h>
 #include <gl/gl.h>
-#include <stdio.h>
+#include <cstdio>
 #include <GL/glut.h>
-
+#include <queue>
+#include <vector>
+#include <tuple>
 ///glut 상수들은 glut.h의 232번줄부터 있다.
+using namespace std;
 
+int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
 float angle=0.0;
-float r=0.0,g=0.0,b=0.0;
-int state[5][5]={{-1,8,7,6,5},//2 : goal
-                 {8,7,6,5,4},//1 : fire
-                 {7,6,5,4,3},//0 : space
-                 {6,5,4,3,2},
-                 {5,4,3,2,1}};
-int player[2]={2,2};
-float size=0.8;
+float r=0.0,g=0.0,b=0.0;                //왼쪽
+vector<vector<int>> state={{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                           { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
+                           { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
+                           {-1,-1,-1,-1, 0, 0,-1, 0,-1, 0},
+                    /*하단*/{ 0, 0, 0, 0,-1, 0,-1, 0,-1, 0},//상단
+                           { 0, 0,-1, 0,-1, 0,-1, 1,-1, 0},
+                           { 0, 0,-1, 0,-1, 0, 0,-1, 0, 0},
+                           { 0, 0,-1,-2,-1, 0, 0, 0, 0, 0},
+                           { 0, 0, 0,-1, 0, 0, 0, 0, 0, 0},
+                           { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+int p[2]={0,9};                          //오른쪽
+float scale=0.4;
+int ms=10;
 int turn=1;
 int cl=0;
+
+queue<tuple<int,int,int>> go;
 
 void stageclear(){
     glColor3f(1.0,1.0,0.0);
@@ -45,12 +57,13 @@ void sq(float x, float y, int color){
     else if(color==1) glColor3f(1.0, 0.0, 0.0);//fire
     else if(color==2) glColor3f(1.0, 1.0, 0.0);//goal
     else if(color==3) glColor3f(0.0, 1.0, 0.0);//player
+    else if(color==4) glColor3f(0.5, 0.5, 0.5);//wall
     else glColor3f(0.0, 0.0, 0.0);
     glBegin(GL_QUADS);
         glVertex3f(x, y, 0.0);
-        glVertex3f(x+size, y, 0.0);
-        glVertex3f(x+size, y+size, 0.0);
-        glVertex3f(x, y+size, 0.0);
+        glVertex3f(x+scale, y, 0.0);
+        glVertex3f(x+scale, y+scale, 0.0);
+        glVertex3f(x, y+scale, 0.0);
     glEnd();
 }
 
@@ -64,14 +77,15 @@ void renderscene(void) {
     if(cl==1) stageclear();
     if(cl==-1) stagefail();
 
-    for(int i=0;i<5;i++){
-        for(int j=0;j<5;j++){
-            if(state[player[0]][player[1]]==-1) cl=1;
-            else if(state[player[0]][player[1]]<=turn) cl=-1;
-            if(state[i][j]==-1) sq(-2.0+(i*size),-2.0+(j*size), 2);//goal
-            else if(state[i][j]<=turn) sq(-2.0+(i*size),-2.0+(j*size), 1);//fire
-            else if(i==player[0] && j==player[1]) sq(-2.0+(i*size),-2.0+(j*size), 3);//player
-            else sq(-2.0+(i*size),-2.0+(j*size), 0);//space
+    for(int i=0;i<10;i++){
+        for(int j=0;j<10;j++){
+            if(state[p[0]][p[1]]==-2) cl=1;
+            else if(state[p[0]][p[1]]>0&&state[p[0]][p[1]]<=turn) cl=-1;
+            if(state[i][j]==-2) sq(-2.0+(i*scale),-2.0+(j*scale), 2);//goal
+            else if(state[i][j]==-1) sq(-2.0+(i*scale),-2.0+(j*scale), 4);//wall
+            else if(state[i][j]>0&&state[i][j]<=turn) sq(-2.0+(i*scale),-2.0+(j*scale), 1);//fire
+            else if(i==p[0] && j==p[1]) sq(-2.0+(i*scale),-2.0+(j*scale), 3);//player
+            else sq(-2.0+(i*scale),-2.0+(j*scale), 0);//space
         }
     }
 
@@ -81,29 +95,41 @@ void renderscene(void) {
 }
 
 void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌표
-    if(cl) return;
-    switch(key){
-    case 27://ESC
+    switch(key){//게임이 끝나도 할 수 있는 행동들
+    case 27:
         exit(0);
         break;
+    case 'r':
+        turn=1;
+        p[0]=0;
+        p[1]=9;
+        cl=0;
+        break;
+    }
+    if(cl) return;
+    switch(key){//게임이 끝나면 할 수 없는 행동들
     case 'w':
-        player[1]++;
-        if(player[1]>=5) player[1]=4;
+        p[1]++;
+        if(p[1]>=ms) p[1]=ms-1;
+        if(state[p[0]][p[1]]==-1) p[1]--;
         turn++;
         break;
     case 'a':
-        player[0]--;
-        if(player[0]<0) player[0]=0;
+        p[0]--;
+        if(p[0]<0) p[0]=0;
+        if(state[p[0]][p[1]]==-1) p[0]++;
         turn++;
         break;
     case 's':
-        player[1]--;
-        if(player[1]<0) player[1]=0;
+        p[1]--;
+        if(p[1]<0) p[1]=0;
+        if(state[p[0]][p[1]]==-1) p[1]++;
         turn++;
         break;
     case 'd':
-        player[0]++;
-        if(player[0]>=5) player[0]=4;
+        p[0]++;
+        if(p[0]>=ms) p[0]=ms-1;
+        if(state[p[0]][p[1]]==-1) p[0]--;
         turn++;
         break;
     }
@@ -127,6 +153,25 @@ void changesize(int w, int h) {
 }
 
 int main(int argc, char **argv) {
+    for(int i=0;i<ms;i++)
+        for(int j=0;j<ms;j++)
+        if(state[i][j]==1) go.push({i,j,1});
+
+    while(!go.empty()){
+        auto[x,y,d]=go.front();
+        go.pop();
+        if(d>1&&state[x][y]!=0) continue;
+        state[x][y]=d;
+
+        for(auto[dx,dy]:dir){
+            if(dx+x>=ms||dx+x<0) continue;
+            if(dy+y>=ms||dy+y<0) continue;
+
+            go.push({dx+x,dy+y,d+1});
+        }
+    }w
+
+
     glutInit(&argc, argv);//초기화
 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);//이중 버퍼, RGB색상 사용(작성 시 "or 연산" 사용)
