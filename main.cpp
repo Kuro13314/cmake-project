@@ -11,6 +11,7 @@ using namespace std;
 
 int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
 float angle=0.0;
+int width, height;
 float r=0.0,g=0.0,b=0.0;                //왼쪽
 vector<vector<int>> board={{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                            { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
@@ -27,6 +28,7 @@ float scale=0.4;
 int ms=10;
 int turn=1;
 int menu=0;
+float mx,my;
 int state=0;
 /*
 state에 따른 상태
@@ -40,14 +42,16 @@ queue<tuple<int,int,int>> go;
 
 void changesize(int w, int h) {
     if(h==0) h=1;
-    float ratio= 1.0* w / h;
+    float rt= 1.0* w / h;
+    width=w;
+    height=h;
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
     glViewport(0,0,w,h);
 
-    gluPerspective(45,ratio,1,1000);
+    gluPerspective(45,rt,1,1000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0.0,0.0,5.0,
@@ -158,6 +162,12 @@ void renderscene(void) {
 
     glPushMatrix();
 
+    glColor3f(0.0f,0.0f,0.0f);
+    glPointSize(5.0f);
+    glBegin(GL_POINTS);
+    glVertex3f(mx*4.0-2.0,2.0-my*4.0,1.2);
+    glEnd();
+
     glColor3f(1.0,1.0,1.0);
 
     if(state==1) stageclear();
@@ -185,7 +195,6 @@ void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌
     switch(key){//게임이 끝나도 할 수 있는 행동들
     case 27:
         menu=(menu+1)%2;
-
         break;
     case 'r':
     case 'R':
@@ -228,6 +237,12 @@ void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌
     }
 }
 
+void ctm(int button, int ud, int x, int y){//pressed button, up or down, x,y
+    if(button!=GLUT_LEFT_BUTTON || ud!=GLUT_DOWN) return;
+    mx=(float)x/width;
+    my=(float)y/height;
+}
+
 int main(int argc, char **argv) {
 
     for(int i=0;i<ms;i++)
@@ -261,6 +276,7 @@ int main(int argc, char **argv) {
     glutIdleFunc(renderscene);//idle 상태일 때 렌더링할 함수
 
     glutKeyboardFunc(pnk);
+    glutMouseFunc(ctm);
 
     glutReshapeFunc(changesize);//창의 크기가 바뀌었을 때, 어떻게 할 것인가를 설정
 
