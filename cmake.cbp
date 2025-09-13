@@ -46,9 +46,7 @@
 			<Add library="glu32" />
 			<Add library="gdi32" />
 		</Linker>
-		<Unit filename="main.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="main.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

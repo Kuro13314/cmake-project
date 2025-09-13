@@ -168,6 +168,7 @@ void changesize(int w, int h) {
 }
 
 int main(int argc, char **argv) {
+
     for(int i=0;i<ms;i++)
         for(int j=0;j<ms;j++)
         if(state[i][j]==1) go.push({i,j,1});
