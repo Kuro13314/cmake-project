@@ -5,13 +5,14 @@
 #include <queue>
 #include <vector>
 #include <tuple>
+#include <random>
 ///glut 상수들은 glut.h의 232번줄부터 있다.
 using namespace std;
 
 int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
 float angle=0.0;
 float r=0.0,g=0.0,b=0.0;                //왼쪽
-vector<vector<int>> state={{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+vector<vector<int>> board={{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                            { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
                            { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
                            {-1,-1,-1,-1, 0, 0,-1, 0,-1, 0},
@@ -25,9 +26,34 @@ int p[2]={0,9};                          //오른쪽
 float scale=0.4;
 int ms=10;
 int turn=1;
-int cl=0;
+int menu=0;
+int state=0;
+/*
+state에 따른 상태
+-1: stage failed
+0 : normal
+1 : stage clear
+2 : menu is opened
+*/
 
 queue<tuple<int,int,int>> go;
+
+void changesize(int w, int h) {
+    if(h==0) h=1;
+    float ratio= 1.0* w / h;
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    glViewport(0,0,w,h);
+
+    gluPerspective(45,ratio,1,1000);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0.0,0.0,5.0,
+              0.0,0.0,0.0,
+              0.0,1.0,0.0);
+}
 
 void stageclear(){
     glColor3f(1.0,1.0,0.0);
@@ -50,6 +76,56 @@ void stagefail(){
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'e');
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'d');
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'!');
+}
+
+void menuopen(){
+    glColor3f(0.1f,0.1f,1.0f);
+    glBegin(GL_QUADS);
+        glVertex3f(-0.6,-0.6, 1.0);
+        glVertex3f( 0.6,-0.6, 1.0);
+        glVertex3f( 0.6, 0.6, 1.0);
+        glVertex3f(-0.6, 0.6, 1.0);
+    glEnd();
+    glColor3f(0.0f,0.0f,0.0f);
+    glLineWidth(5.0f);
+
+    glBegin(GL_LINE_LOOP);
+        glVertex3f(-0.2, 0.5, 1.1);
+        glVertex3f( 0.2, 0.5, 1.1);
+        glVertex3f( 0.2, 0.3, 1.1);
+        glVertex3f(-0.2, 0.3, 1.1);
+    glEnd();
+    glRasterPos3f(-0.11,0.375,1.1);
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'m');
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'e');
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'n');
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'u');
+
+    glBegin(GL_LINE_LOOP);
+        glVertex3f(-0.2, 0.1, 1.1);
+        glVertex3f( 0.2, 0.1, 1.1);
+        glVertex3f( 0.2,-0.1, 1.1);
+        glVertex3f(-0.2,-0.1, 1.1);
+    glEnd();
+    glRasterPos3f(-0.11,-0.025,1.1);
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'r');
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'e');
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'s');
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'e');
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'t');
+
+    glColor3f(1.0f,0.0f,0.0f);
+    glBegin(GL_LINE_LOOP);
+        glVertex3f(-0.2,-0.3, 1.1);
+        glVertex3f( 0.2,-0.3, 1.1);
+        glVertex3f( 0.2,-0.5, 1.1);
+        glVertex3f(-0.2,-0.5, 1.1);
+    glEnd();
+    glRasterPos3f(-0.08,-0.425,1.1);
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'e');
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'x');
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'i');
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'t');
 }
 
 void sq(float x, float y, int color){
@@ -84,16 +160,17 @@ void renderscene(void) {
 
     glColor3f(1.0,1.0,1.0);
 
-    if(cl==1) stageclear();
-    if(cl==-1) stagefail();
+    if(state==1) stageclear();
+    if(state==-1) stagefail();
+    if(menu) menuopen();
 
     for(int i=0;i<10;i++){
         for(int j=0;j<10;j++){
-            if(state[p[0]][p[1]]==-2) cl=1;
-            else if(state[p[0]][p[1]]>0&&state[p[0]][p[1]]<=turn) cl=-1;
-            if(state[i][j]==-2) sq(-2.0+(i*scale),-2.0+(j*scale), 2);//goal
-            else if(state[i][j]==-1) sq(-2.0+(i*scale),-2.0+(j*scale), 4);//wall
-            else if(state[i][j]>0&&state[i][j]<=turn) sq(-2.0+(i*scale),-2.0+(j*scale), 1);//fire
+            if(board[p[0]][p[1]]==-2) state=1;
+            else if(board[p[0]][p[1]]>0&&board[p[0]][p[1]]<=turn) state=-1;
+            if(board[i][j]==-2) sq(-2.0+(i*scale),-2.0+(j*scale), 2);//goal
+            else if(board[i][j]==-1) sq(-2.0+(i*scale),-2.0+(j*scale), 4);//wall
+            else if(board[i][j]>0&&board[i][j]<=turn) sq(-2.0+(i*scale),-2.0+(j*scale), 1);//fire
             else if(i==p[0] && j==p[1]) sq(-2.0+(i*scale),-2.0+(j*scale), 3);//player
             else sq(-2.0+(i*scale),-2.0+(j*scale), 0);//space
         }
@@ -107,77 +184,61 @@ void renderscene(void) {
 void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌표
     switch(key){//게임이 끝나도 할 수 있는 행동들
     case 27:
-        exit(0);
+        menu=(menu+1)%2;
+
         break;
     case 'r':
     case 'R':
         turn=1;
         p[0]=0;
         p[1]=9;
-        cl=0;
+        state=0;
         break;
     }
-    if(cl) return;
+    if(state||menu) return;
     switch(key){//게임이 끝나면 할 수 없는 행동들
     case 'w':
     case 'W':
         p[1]++;
         if(p[1]>=ms) p[1]=ms-1;
-        if(state[p[0]][p[1]]==-1) p[1]--;
+        if(board[p[0]][p[1]]==-1) p[1]--;
         turn++;
         break;
     case 'a':
     case 'A':
         p[0]--;
         if(p[0]<0) p[0]=0;
-        if(state[p[0]][p[1]]==-1) p[0]++;
+        if(board[p[0]][p[1]]==-1) p[0]++;
         turn++;
         break;
     case 's':
     case 'S':
         p[1]--;
         if(p[1]<0) p[1]=0;
-        if(state[p[0]][p[1]]==-1) p[1]++;
+        if(board[p[0]][p[1]]==-1) p[1]++;
         turn++;
         break;
     case 'd':
     case 'D':
         p[0]++;
         if(p[0]>=ms) p[0]=ms-1;
-        if(state[p[0]][p[1]]==-1) p[0]--;
+        if(board[p[0]][p[1]]==-1) p[0]--;
         turn++;
         break;
     }
-}
-
-void changesize(int w, int h) {
-    if(h==0) h=1;
-    float ratio= 1.0* w / h;
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glViewport(0,0,w,h);
-
-    gluPerspective(45,ratio,1,1000);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0.0,0.0,5.0,
-              0.0,0.0,0.0,
-              0.0,1.0,0.0);
 }
 
 int main(int argc, char **argv) {
 
     for(int i=0;i<ms;i++)
         for(int j=0;j<ms;j++)
-        if(state[i][j]==1) go.push({i,j,1});
+        if(board[i][j]==1) go.push({i,j,1});
 
     while(!go.empty()){
         auto[x,y,d]=go.front();
         go.pop();
-        if(d>1&&state[x][y]!=0) continue;
-        state[x][y]=d;
+        if(d>1&&board[x][y]!=0) continue;
+        board[x][y]=d;
 
         for(auto[dx,dy]:dir){
             if(dx+x>=ms||dx+x<0) continue;
@@ -193,8 +254,8 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);//이중 버퍼, RGB색상, 깊이 버퍼 사용 (작성 시 "or 연산" 사용)
 
     glutInitWindowPosition(300,100);//왼쪽 위 기준 가로 100, 세로 100 떨어진곳에 창의 온쪽 위가 위치
-    glutInitWindowSize(320,320);//창의 크기(가로, 세로)
-    glutCreateWindow("GLUT Practice");//창 만들기(제목)
+    glutInitWindowSize(640,640);//창의 크기(가로, 세로)
+    glutCreateWindow("SLIKAR");//창 만들기(제목)
 
     glutDisplayFunc(renderscene);//렌더링할 함수를 설정
     glutIdleFunc(renderscene);//idle 상태일 때 렌더링할 함수
