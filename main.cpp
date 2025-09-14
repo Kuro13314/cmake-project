@@ -5,23 +5,22 @@
 #include <queue>
 #include <vector>
 #include <tuple>
-#include <random>
 ///glut 상수들은 glut.h의 232번줄부터 있다.
 using namespace std;
 
 int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
 float angle=0.0;
 int width, height;
-float r=0.0,g=0.0,b=0.0;                 //왼쪽
+float r=0.0,g=0.0,b=0.0,z=0.0;                 //왼쪽
 vector<vector<int>> board={{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                            { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
                            { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
                            {-1,-1,-1,-1, 0, 0,-1, 0,-1, 0},
-                    /*하단*/{ 0, 0, 0, 0,-1, 0,-1, 0,-1, 0},//상단
-                           { 0, 0,-1, 0,-1, 0,-1, 1,-1, 0},
-                           { 0, 0,-1, 0,-1, 0, 0,-1, 0, 0},
-                           { 0, 0,-1,-2,-1, 0, 0, 0, 0, 0},
-                           { 0, 0, 0,-1, 0, 0, 0, 0, 0, 0},
+                           { 0, 0, 0,-1, 0, 0,-1, 0,-1, 0},//상단
+                           { 0,-1, 0,-1, 0, 0,-1, 1,-1, 0},
+                           { 0,-1, 0,-1, 0, 0, 0,-1, 0, 0},
+                           { 0,-1,-2,-1, 0, 0, 0, 0, 0, 0},
+                           { 0,-1,-1,-1, 0, 0, 0, 0, 0, 0},
                            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 int p[2]={0,9};                          //오른쪽
 float scale=0.4;
@@ -36,7 +35,6 @@ state에 따른 상태
 -1: stage failed
 0 : normal
 1 : stage clear
-2 : menu is opened
 */
 
 queue<tuple<int,int,int>> go;
@@ -85,11 +83,8 @@ void menuopen(){
         glVertex3f( 0.2, 0.3, 1.1);
         glVertex3f(-0.2, 0.3, 1.1);
     glEnd();
-    glRasterPos3f(-0.11,0.375,1.1);
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'m');
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'e');
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'n');
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'u');
+    sprintf(s,"menu");
+    renderstring(-0.11,0.375,1.1,s);
 
     glBegin(GL_LINE_LOOP);
         glVertex3f(-0.2, 0.1, 1.1);
@@ -97,12 +92,8 @@ void menuopen(){
         glVertex3f( 0.2,-0.1, 1.1);
         glVertex3f(-0.2,-0.1, 1.1);
     glEnd();
-    glRasterPos3f(-0.11,-0.025,1.1);
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'r');
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'e');
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'s');
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'e');
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'t');
+    sprintf(s,"reset");
+    renderstring(-0.11,-0.025,1.1,s);
 
     glColor3f(1.0f,0.0f,0.0f);
     glBegin(GL_LINE_LOOP);
@@ -111,11 +102,8 @@ void menuopen(){
         glVertex3f( 0.2,-0.5, 1.1);
         glVertex3f(-0.2,-0.5, 1.1);
     glEnd();
-    glRasterPos3f(-0.08,-0.425,1.1);
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'e');
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'x');
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'i');
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,'t');
+    sprintf(s,"exit");
+    renderstring(-0.08,-0.425,1.1,s);
 }
 
 void sq(float x, float y, int color){
@@ -144,6 +132,14 @@ void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌
         p[0]=0;
         p[1]=9;
         state=0;
+        break;
+    case 'q':
+    case 'Q':
+        z+=0.01;
+        break;
+    case 'e':
+    case 'E':
+        z-=0.01;
         break;
     }
     if(state||menu) return;
@@ -190,6 +186,8 @@ void ctm(int button, int ud, int x, int y){//pressed button, up or down, x,y
     else if(mx>0.435 && mx<0.565 && my>0.59 && my<0.66) {// exit
         exit(0);
     }
+    else if((mx<0.318 || mx>0.68) || (my<0.317 || my>0.68)) menu=0;
+
 }
 
 void mtm(int x, int y){
