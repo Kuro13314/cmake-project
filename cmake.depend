@@ -10,12 +10,12 @@
 	<stdio.h>
 	<GL/glut.h>
 
-1757152698 c:\program files\codeblocks\mingw\include\gl\glut.h
+1757835746 c:\program files\codeblocks\mingw\include\gl\glut.h
 	<windows.h>
 	<GL/gl.h>
 	<GL/glu.h>
 
-1757760815 source:c:\users\c3dongtan\dimigo-project\project\main.cpp
+1757838810 source:c:\users\c3dongtan\dimigo-project\project\main.cpp
 	<windows.h>
 	<gl/gl.h>
 	<cstdio>
