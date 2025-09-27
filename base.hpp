@@ -1,3 +1,5 @@
+#pragma once
+
 #include <windows.h>
 #include <gl/gl.h>
 #include <cstdio>
@@ -7,7 +9,6 @@
 
 int width, height;
 char s_[100];
-int asdf=0;
 
 void renderstring(float x, float y, float z, char* str){
     char *c;
@@ -34,15 +35,6 @@ void changesize(int w, int h) {
     gluLookAt(0.0,0.0,5.0,
               0.0,0.0,0.0,
               0.0,1.0,0.0);
-}
-
-void pcm(int value){
-    switch (value)
-    {
-        case 1 :
-            asdf=(asdf+1)%2;
-            break;
-    }
 }
 
 void menuopen(){

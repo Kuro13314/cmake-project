@@ -1,4 +1,5 @@
 #include "base.hpp"
+#include "slikar.hpp"
 #include <queue>
 #include <vector>
 #include <tuple>
@@ -6,10 +7,9 @@
 using namespace std;
 
 extern int width, height;
-extern int asdf;
 
 int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
-float angle=0.0,z=0.0;
+float angle=0.0;
 float r=0.0,g=0.0,b=0.0;                 //왼쪽
 vector<vector<int>> board={{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                            { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
@@ -39,79 +39,15 @@ state에 따른 상태
 queue<tuple<int,int,int>> go;
 
 void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌표
-    switch(key){//게임이 끝나도 할 수 있는 행동들
-    case 27:
-        menu=(menu+1)%2;
-        break;
-    case 'r':
-    case 'R':
-        turn=1;
-        p[0]=0;
-        p[1]=9;
-        state=0;
-        break;
-    case 'q':
-    case 'Q':
-        z+=0.01;
-        break;
-    case 'e':
-    case 'E':
-        z-=0.01;
-        break;
-    }
-    if(state) return;
-    switch(key){//게임이 끝나면 할 수 없는 행동들
-    case 'w':
-    case 'W':
-        p[1]++;
-        if(p[1]>=ms) p[1]=ms-1;
-        if(board[p[0]][p[1]]==-1) p[1]--;
-        turn++;
-        break;
-    case 'a':
-    case 'A':
-        p[0]--;
-        if(p[0]<0) p[0]=0;
-        if(board[p[0]][p[1]]==-1) p[0]++;
-        turn++;
-        break;
-    case 's':
-    case 'S':
-        p[1]--;
-        if(p[1]<0) p[1]=0;
-        if(board[p[0]][p[1]]==-1) p[1]++;
-        turn++;
-        break;
-    case 'd':
-    case 'D':
-        p[0]++;
-        if(p[0]>=ms) p[0]=ms-1;
-        if(board[p[0]][p[1]]==-1) p[0]--;
-        turn++;
-        break;
-    }
+    slikar::pnk(key,x,y);
 }
 
 void ctm(int button, int ud, int x, int y){//pressed button, up or down, x,y
-    if(!(menu&&button==GLUT_LEFT_BUTTON&&ud==GLUT_DOWN)) return;
-    if(mx>0.435 && mx<0.565 && my>0.465 && my<0.535) {// reset
-        turn=1;
-        p[0]=0;
-        p[1]=9;
-        state=0;
-    }
-    else if(mx>0.435 && mx<0.565 && my>0.59 && my<0.66) {// exit
-        exit(0);
-    }
-    else if((mx<0.318 || mx>0.68) || (my<0.317 || my>0.68)) menu=0;
-
+    slikar::ctm(button,ud,x,y);
 }
 
 void mtm(int x, int y){
-    if(x<0||x>width||y<0||y>height) return;
-    if(width>height) x-=(width-height)/2;
-    mx=(float)x/height;
-    my=(float)y/height;
+    slikar::mtm(x,y);
 }
 
 void renderscene(void) {
@@ -122,11 +58,6 @@ void renderscene(void) {
     sprintf(s,"state : %d",state);
     glColor3f(0.0,0.0,0.0);
     renderstring(-1.5,-1.5,1.0,s);
-
-    if(asdf){
-        sprintf(s,"MENU!");
-        renderstring(-0.5,0.0,1.0,s);
-    }
 
     if(state==1){//성공
         glColor3f(1.0,1.0,0.0);
@@ -199,41 +130,5 @@ int main(int argc, char **argv) {
     glutMainLoop();//이벤트가 생길때까지 루프
 
     return 0;
-}
-
-void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC) {
-    PIXELFORMATDESCRIPTOR pfd;
-
-    int iFormat;
-
-    /* get the device context (DC) */
-    *hDC = GetDC(hwnd);
-
-    /* set the pixel format for the DC */
-    ZeroMemory(&pfd, sizeof(pfd));
-
-    pfd.nSize = sizeof(pfd);
-    pfd.nVersion = 1;
-    pfd.dwFlags = PFD_DRAW_TO_WINDOW |
-                  PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-    pfd.iPixelType = PFD_TYPE_RGBA;
-    pfd.cColorBits = 24;
-    pfd.cDepthBits = 16;
-    pfd.iLayerType = PFD_MAIN_PLANE;
-
-    iFormat = ChoosePixelFormat(*hDC, &pfd);
-
-    SetPixelFormat(*hDC, iFormat, &pfd);
-
-    /* create and enable the render context (RC) */
-    *hRC = wglCreateContext(*hDC);
-
-    wglMakeCurrent(*hDC, *hRC);
-}
-
-void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC) {
-    wglMakeCurrent(NULL, NULL);
-    wglDeleteContext(hRC);
-    ReleaseDC(hwnd, hDC);
 }
 

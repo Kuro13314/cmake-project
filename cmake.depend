@@ -15,15 +15,11 @@
 	<GL/gl.h>
 	<GL/glu.h>
 
-1757839572 source:c:\users\c3dongtan\dimigo-project\project\main.cpp
-	<windows.h>
-	<gl/gl.h>
-	<cstdio>
-	<GL/glut.h>
+1758958674 source:c:\users\c3dongtan\dimigo-project\project\main.cpp
+	"base.hpp"
 	<queue>
 	<vector>
 	<tuple>
-	<random>
 
 1758957591 source:c:\users\c3dongtan\dimigo-project\slikar\main.cpp
 	"base.hpp"
@@ -51,4 +47,10 @@
 	<cstdio>
 	<GL/glut.h>
 	<utility>
+
+1758958868 c:\users\c3dongtan\dimigo-project\project\base.hpp
+	<windows.h>
+	<gl/gl.h>
+	<cstdio>
+	<GL/glut.h>
 
