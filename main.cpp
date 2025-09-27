@@ -1,17 +1,16 @@
-#include <windows.h>
-#include <gl/gl.h>
-#include <cstdio>
-#include <GL/glut.h>
+#include "base.hpp"
 #include <queue>
 #include <vector>
 #include <tuple>
 ///glut 상수들은 glut.h의 232번줄부터 있다.
 using namespace std;
 
+extern int width, height;
+extern int asdf;
+
 int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
-float angle=0.0;
-int width, height;
-float r=0.0,g=0.0,b=0.0,z=0.0;                 //왼쪽
+float angle=0.0,z=0.0;
+float r=0.0,g=0.0,b=0.0;                 //왼쪽
 vector<vector<int>> board={{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                            { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
                            { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
@@ -39,88 +38,6 @@ state에 따른 상태
 
 queue<tuple<int,int,int>> go;
 
-void renderstring(float x, float y, float z, char* str){
-    char *c;
-    glRasterPos3f(x, y, z);
-    for (c=str; *c != '\0'; c++){
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
-    }
-}
-
-void changesize(int w, int h) {
-    if(h==0) h=1;
-    float rt= 1.0* w / h;
-    width=w;
-    height=h;
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glViewport(0,0,w,h);
-
-    gluPerspective(45,rt,1,1000);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0.0,0.0,5.0,
-              0.0,0.0,0.0,
-              0.0,1.0,0.0);
-}
-
-void menuopen(){
-    glColor3f(0.1f,0.1f,1.0f);
-    glBegin(GL_QUADS);
-        glVertex3f(-0.6,-0.6, 1.0);
-        glVertex3f( 0.6,-0.6, 1.0);
-        glVertex3f( 0.6, 0.6, 1.0);
-        glVertex3f(-0.6, 0.6, 1.0);
-    glEnd();
-    glColor3f(0.0f,0.0f,0.0f);
-    glLineWidth(5.0f);
-
-    glBegin(GL_LINE_LOOP);
-        glVertex3f(-0.2, 0.5, 1.1);
-        glVertex3f( 0.2, 0.5, 1.1);
-        glVertex3f( 0.2, 0.3, 1.1);
-        glVertex3f(-0.2, 0.3, 1.1);
-    glEnd();
-    sprintf(s,"menu");
-    renderstring(-0.11,0.375,1.1,s);
-
-    glBegin(GL_LINE_LOOP);
-        glVertex3f(-0.2, 0.1, 1.1);
-        glVertex3f( 0.2, 0.1, 1.1);
-        glVertex3f( 0.2,-0.1, 1.1);
-        glVertex3f(-0.2,-0.1, 1.1);
-    glEnd();
-    sprintf(s,"reset");
-    renderstring(-0.11,-0.025,1.1,s);
-
-    glColor3f(1.0f,0.0f,0.0f);
-    glBegin(GL_LINE_LOOP);
-        glVertex3f(-0.2,-0.3, 1.1);
-        glVertex3f( 0.2,-0.3, 1.1);
-        glVertex3f( 0.2,-0.5, 1.1);
-        glVertex3f(-0.2,-0.5, 1.1);
-    glEnd();
-    sprintf(s,"exit");
-    renderstring(-0.08,-0.425,1.1,s);
-}
-
-void sq(float x, float y, int color){
-    if(color==0) glColor3f(1.0, 1.0, 1.0);//space
-    else if(color==1) glColor3f(1.0, 0.0, 0.0);//fire
-    else if(color==2) glColor3f(1.0, 1.0, 0.0);//goal
-    else if(color==3) glColor3f(0.0, 1.0, 0.0);//player
-    else if(color==4) glColor3f(0.5, 0.5, 0.5);//wall
-    else glColor3f(0.0, 0.0, 0.0);
-    glBegin(GL_QUADS);
-        glVertex3f(x, y, 0.0);
-        glVertex3f(x+scale, y, 0.0);
-        glVertex3f(x+scale, y+scale, 0.0);
-        glVertex3f(x, y+scale, 0.0);
-    glEnd();
-}
-
 void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌표
     switch(key){//게임이 끝나도 할 수 있는 행동들
     case 27:
@@ -142,7 +59,7 @@ void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌
         z-=0.01;
         break;
     }
-    if(state||menu) return;
+    if(state) return;
     switch(key){//게임이 끝나면 할 수 없는 행동들
     case 'w':
     case 'W':
@@ -202,18 +119,14 @@ void renderscene(void) {
 
     glPushMatrix();
 
-    glColor3f(0.0f,0.0f,0.0f);
-    glPointSize(5.0f);
-    glBegin(GL_POINTS);
-    glVertex3f((mx*4.0)-2.0,2.0-(my*4.0),0.2);
-    glEnd();
+    sprintf(s,"state : %d",state);
+    glColor3f(0.0,0.0,0.0);
+    renderstring(-1.5,-1.5,1.0,s);
 
-    sprintf(s,"mx : %4.4f",mx);
-    renderstring(-1.9,-1.75,0.1,s);
-    sprintf(s,"my : %4.4f",my);
-    renderstring(-1.9,-1.9,0.1,s);
-
-    glColor3f(1.0,1.0,1.0);
+    if(asdf){
+        sprintf(s,"MENU!");
+        renderstring(-0.5,0.0,1.0,s);
+    }
 
     if(state==1){//성공
         glColor3f(1.0,1.0,0.0);
@@ -229,13 +142,13 @@ void renderscene(void) {
 
     for(int i=0;i<10;i++){
         for(int j=0;j<10;j++){
-            if(board[p[0]][p[1]]==-2) state=1;
-            else if(board[p[0]][p[1]]>0&&board[p[0]][p[1]]<=turn) state=-1;
-            if(board[i][j]==-2) sq(-2.0+(i*scale),-2.0+(j*scale), 2);//goal
-            else if(board[i][j]==-1) sq(-2.0+(i*scale),-2.0+(j*scale), 4);//wall
-            else if(board[i][j]>0&&board[i][j]<=turn) sq(-2.0+(i*scale),-2.0+(j*scale), 1);//fire
-            else if(i==p[0] && j==p[1]) sq(-2.0+(i*scale),-2.0+(j*scale), 3);//player
-            else sq(-2.0+(i*scale),-2.0+(j*scale), 0);//space
+            if(board[p[0]][p[1]]==-2&&state==0) state=1;
+            else if(board[p[0]][p[1]]>0&&board[p[0]][p[1]]<=turn&&state==0) state=-1;
+            if(board[i][j]==-2) sq(-2.0+(i*scale),-2.0+(j*scale), scale, 1.0, 1.0, 0.0);//goal
+            else if(board[i][j]==-1) sq(-2.0+(i*scale),-2.0+(j*scale), scale, 0.5,0.5,0.5);//wall
+            else if(board[i][j]>0&&board[i][j]<=turn) sq(-2.0+(i*scale),-2.0+(j*scale), scale, 1.0, 0.0 ,0.0);//fire
+            else if(i==p[0] && j==p[1]) sq(-2.0+(i*scale),-2.0+(j*scale), scale, 0.0, 1.0, 0.0);//player
+            else sq(-2.0+(i*scale),-2.0+(j*scale), scale, 1.0, 1.0, 1.0);//space
         }
     }
 

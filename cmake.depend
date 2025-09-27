@@ -10,7 +10,7 @@
 	<stdio.h>
 	<GL/glut.h>
 
-1757835746 c:\program files\codeblocks\mingw\include\gl\glut.h
+1758957457 c:\program files\codeblocks\mingw\include\gl\glut.h
 	<windows.h>
 	<GL/gl.h>
 	<GL/glu.h>
@@ -24,4 +24,31 @@
 	<vector>
 	<tuple>
 	<random>
+
+1758957591 source:c:\users\c3dongtan\dimigo-project\slikar\main.cpp
+	"base.hpp"
+	<queue>
+	<vector>
+	<tuple>
+
+1758352132 source:c:\users\c3dongtan\dimigo-project\slikar\mwbw.cpp
+
+1758353467 source:c:\users\c3dongtan\dimigo-project\slikar\slikar.cpp
+	"base.hpp"
+	<queue>
+	<vector>
+	<tuple>
+
+1758957619 c:\users\c3dongtan\dimigo-project\slikar\base.hpp
+	<windows.h>
+	<gl/gl.h>
+	<cstdio>
+	<GL/glut.h>
+
+1758354774 source:c:\users\c3dongtan\dimigo-project\slikar\base.cpp
+	<windows.h>
+	<gl/gl.h>
+	<cstdio>
+	<GL/glut.h>
+	<utility>
 
