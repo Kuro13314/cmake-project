@@ -1,5 +1,4 @@
 #pragma once
-
 #include <windows.h>
 #include <gl/gl.h>
 #include <cstdio>
@@ -7,8 +6,13 @@
 
 ///glut 상수들은 glut.h의 232번줄부터 있다.
 
+int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
+
 int width, height;
-char s_[100];
+int menu,ms,game=0;
+float scale=0.4,z;
+float mx,my;
+char s[100];
 
 void renderstring(float x, float y, float z, char* str){
     char *c;
@@ -23,6 +27,7 @@ void changesize(int w, int h) {
     float rt= 1.0* w / h;
     width=w;
     height=h;
+    glutReshapeWindow( 640, 640);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -32,7 +37,7 @@ void changesize(int w, int h) {
     gluPerspective(45,rt,1,1000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0.0,0.0,5.0,
+    gluLookAt(0.0,0.0,10.0,
               0.0,0.0,0.0,
               0.0,1.0,0.0);
 }
@@ -54,8 +59,8 @@ void menuopen(){
         glVertex3f( 0.2, 0.3, 1.1);
         glVertex3f(-0.2, 0.3, 1.1);
     glEnd();
-    sprintf(s_,"menu");
-    renderstring(-0.11,0.375,1.1,s_);
+    sprintf(s,"menu");
+    renderstring(-0.11,0.375,1.1,s);
 
     glBegin(GL_LINE_LOOP);
         glVertex3f(-0.2, 0.1, 1.1);
@@ -63,8 +68,8 @@ void menuopen(){
         glVertex3f( 0.2,-0.1, 1.1);
         glVertex3f(-0.2,-0.1, 1.1);
     glEnd();
-    sprintf(s_,"reset");
-    renderstring(-0.11,-0.025,1.1,s_);
+    sprintf(s,"reset");
+    renderstring(-0.11,-0.025,1.1,s);
 
     glColor3f(1.0f,0.0f,0.0f);
     glBegin(GL_LINE_LOOP);
@@ -73,8 +78,8 @@ void menuopen(){
         glVertex3f( 0.2,-0.5, 1.1);
         glVertex3f(-0.2,-0.5, 1.1);
     glEnd();
-    sprintf(s_,"exit");
-    renderstring(-0.08,-0.425,1.1,s_);
+    sprintf(s,"exit");
+    renderstring(-0.08,-0.425,1.1,s);
 }
 
 void sq(float x, float y, float scale, float red, float green, float blue){

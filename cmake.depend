@@ -15,7 +15,9 @@
 	<GL/gl.h>
 	<GL/glu.h>
 
-1758958674 source:c:\users\c3dongtan\dimigo-project\project\main.cpp
+1759657825 source:c:\users\c3dongtan\dimigo-project\project\main.cpp
+	"slikar.hpp"
+	"mbtw.hpp"
 	"base.hpp"
 	<queue>
 	<vector>
@@ -48,9 +50,32 @@
 	<GL/glut.h>
 	<utility>
 
-1758958868 c:\users\c3dongtan\dimigo-project\project\base.hpp
+1759657039 c:\users\c3dongtan\dimigo-project\project\base.hpp
 	<windows.h>
 	<gl/gl.h>
 	<cstdio>
 	<GL/glut.h>
+
+1759559264 source:c:\users\c3dongtan\dimigo-project\project\base.cpp
+	<cstdio>
+
+1759657815 c:\users\c3dongtan\dimigo-project\project\slikar.hpp
+	"base.hpp"
+	<windows.h>
+	<gl/gl.h>
+	<cstdio>
+	<GL/glut.h>
+	<vector>
+	<queue>
+	<tuple>
+
+1759658087 c:\users\c3dongtan\dimigo-project\project\mbtw.hpp
+	"base.hpp"
+	<windows.h>
+	<gl/gl.h>
+	<cstdio>
+	<GL/glut.h>
+	<vector>
+	<queue>
+	<tuple>
 

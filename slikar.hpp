@@ -1,43 +1,78 @@
+#pragma once
+
+#include "base.hpp"
 #include <windows.h>
 #include <gl/gl.h>
 #include <cstdio>
 #include <GL/glut.h>
 #include <vector>
-#include <queue>'
+#include <queue>
+#include <tuple>
 
 using namespace std;
 
+extern int menu,ms,height,width,p[2],game,dir[4][2];
+extern float scale,mx,my;
+
 namespace slikar
-{
-    int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
-    float angle=0.0;
-    float r=0.0,g=0.0,b=0.0;                 //왼쪽
+{                                            //왼쪽
     vector<vector<int>> board={{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                                { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
                                { 0, 0, 0, 0, 0, 0,-1, 0,-1, 0},
                                {-1,-1,-1,-1, 0, 0,-1, 0,-1, 0},
-                               { 0, 0, 0,-1, 0, 0,-1, 0,-1, 0},//상단
+                        /*하단*/{ 0, 0, 0,-1, 0, 0,-1, 0,-1, 0},//상단
                                { 0,-1, 0,-1, 0, 0,-1, 1,-1, 0},
                                { 0,-1, 0,-1, 0, 0, 0,-1, 0, 0},
                                { 0,-1,-2,-1, 0, 0, 0, 0, 0, 0},
                                { 0,-1,-1,-1, 0, 0, 0, 0, 0, 0},
                                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    int p[2]={0,9};                          //오른쪽
-    float scale=0.4;
-    int ms=10;
-    int turn=1;
-    int menu=0;
-    float mx,my;
-    int state=0;
-    char s[100];
-    /*
-    state에 따른 상태
-    -1: stage failed
-    0 : normal
-    1 : stage clear
-    */
+                                             //오른쪽
 
     queue<tuple<int,int,int>> go;
+    int state=0,turn=1,p[2]={0,9};
+
+    void init(int f){///나중에 여기다가 맵 랜덤 생성 알고리즘 넣기
+        p[0]=0;p[1]=9;
+        turn=1;
+        for(int i=0;i<ms;i++)
+            for(int j=0;j<ms;j++)
+                if(board[i][j]==1) go.push(make_tuple(i,j,1));
+
+        if(f) return;
+        while(!go.empty()){
+            auto[x,y,d]=go.front();
+            go.pop();
+            if(d>1&&board[x][y]!=0) continue;
+            board[x][y]=d;
+
+            for(auto[dx,dy]:dir){
+                if(dx+x>=ms||dx+x<0) continue;
+                if(dy+y>=ms||dy+y<0) continue;
+
+                go.push({dx+x,dy+y,d+1});
+            }
+        }
+    }
+
+    void ctm(int button, int ud, int x, int y){//click the mouse, up or down, x, y
+        if(!menu) return;
+        if(mx>0.435 && mx<0.565 && my>0.34 && my<0.41) {// menu
+            z=10.0;
+            glLoadIdentity();
+            gluLookAt(0.0,0.0,10.0,
+                      0.0,0.0,0.0,
+                      0.0,1.0,0.0);
+            game=0;
+            menu=0;
+        }
+        else if(mx>0.435 && mx<0.565 && my>0.465 && my<0.535) {// reset
+            init(1);
+        }
+        else if(mx>0.435 && mx<0.565 && my>0.59 && my<0.66) {// exit
+            exit(0);
+        }
+        else if((mx<0.318 || mx>0.68) || (my<0.317 || my>0.68)) menu=0;
+    }
 
     void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌표
         switch(key){//게임이 끝나도 할 수 있는 행동들
@@ -51,7 +86,8 @@ namespace slikar
             p[1]=9;
             state=0;
             break;
-        if(state) return;
+        }
+        if(state||menu) return;
         switch(key){//게임이 끝나면 할 수 없는 행동들
         case 'w':
         case 'W':
@@ -84,36 +120,7 @@ namespace slikar
         }
     }
 
-    void ctm(int button, int ud, int x, int y){//pressed button, up or down, x,y
-        if(!(menu&&button==GLUT_LEFT_BUTTON&&ud==GLUT_DOWN)) return;
-        if(mx>0.435 && mx<0.565 && my>0.465 && my<0.535) {// reset
-            turn=1;
-            p[0]=0;
-            p[1]=9;
-            state=0;
-        }
-        else if(mx>0.435 && mx<0.565 && my>0.59 && my<0.66) {// exit
-            exit(0);
-        }
-        else if((mx<0.318 || mx>0.68) || (my<0.317 || my>0.68)) menu=0;
-
-    }
-
-    void mtm(int x, int y){
-        if(x<0||x>width||y<0||y>height) return;
-        if(width>height) x-=(width-height)/2;
-        mx=(float)x/height;
-        my=(float)y/height;
-    }
-
-    void renderscene(void) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glPushMatrix();
-
-        sprintf(s,"state : %d",state);
-        glColor3f(0.0,0.0,0.0);
-        renderstring(-1.5,-1.5,1.0,s);
+    void renderscene(void){
 
         if(state==1){//성공
             glColor3f(1.0,1.0,0.0);
@@ -138,9 +145,5 @@ namespace slikar
                 else sq(-2.0+(i*scale),-2.0+(j*scale), scale, 1.0, 1.0, 1.0);//space
             }
         }
-
-        glPopMatrix();
-
-        glutSwapBuffers();
     }
 }

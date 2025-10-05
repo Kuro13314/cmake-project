@@ -47,6 +47,7 @@
 			<Add library="gdi32" />
 		</Linker>
 		<Unit filename="main.cpp" />
+		<Unit filename="mbtw.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
