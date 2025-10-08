@@ -15,9 +15,10 @@
 	<GL/gl.h>
 	<GL/glu.h>
 
-1759657825 source:c:\users\c3dongtan\dimigo-project\project\main.cpp
+1759913596 source:c:\users\c3dongtan\dimigo-project\project\main.cpp
 	"slikar.hpp"
 	"mbtw.hpp"
+	"slide.hpp"
 	"base.hpp"
 	<queue>
 	<vector>
@@ -50,7 +51,7 @@
 	<GL/glut.h>
 	<utility>
 
-1759657039 c:\users\c3dongtan\dimigo-project\project\base.hpp
+1759908832 c:\users\c3dongtan\dimigo-project\project\base.hpp
 	<windows.h>
 	<gl/gl.h>
 	<cstdio>
@@ -59,7 +60,7 @@
 1759559264 source:c:\users\c3dongtan\dimigo-project\project\base.cpp
 	<cstdio>
 
-1759657815 c:\users\c3dongtan\dimigo-project\project\slikar.hpp
+1759905324 c:\users\c3dongtan\dimigo-project\project\slikar.hpp
 	"base.hpp"
 	<windows.h>
 	<gl/gl.h>
@@ -69,7 +70,19 @@
 	<queue>
 	<tuple>
 
-1759658087 c:\users\c3dongtan\dimigo-project\project\mbtw.hpp
+1759904964 c:\users\c3dongtan\dimigo-project\project\mbtw.hpp
+	"base.hpp"
+	<windows.h>
+	<gl/gl.h>
+	<cstdio>
+	<GL/glut.h>
+	<vector>
+	<queue>
+	<tuple>
+
+1759658223 source:c:\users\c3dongtan\dimigo-project\project\slikar.cpp
+
+1759915011 c:\users\c3dongtan\dimigo-project\project\slide.hpp
 	"base.hpp"
 	<windows.h>
 	<gl/gl.h>

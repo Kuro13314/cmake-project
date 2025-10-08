@@ -1,5 +1,6 @@
 #include "slikar.hpp"
 #include "mbtw.hpp"
+#include "slide.hpp"
 #include "base.hpp"
 #include <queue>
 #include <vector>
@@ -7,19 +8,16 @@
 
 using namespace std;
 
-extern int menu,ms,p[2],game,dir[4][2];
+extern int menu,p[2],game,dir[4][2];
 extern float scale,mx,my,z;
 extern int width, height;
 
-int watch=0;
-float r=0.0,g=0.0,b=0.0;
-int main_window,sub_window;
+int watch;
 /*
 0 : main menu
 1 : slikar
 2 : mbtw
 */
-vector<vector<int>> board=slikar::board;
 
 void mtm(int x, int y){
     if(x<0||x>width||y<0||y>height) return;
@@ -37,20 +35,21 @@ void ctm(int button, int ud, int x, int y){//click the mouse, up or down, x, y
     case 2:
         mbtw::ctm(button,ud,x,y);
         return;
+    case 3:
+        slide::ctm(button,ud,x,y);
+        return;
     }
 
     if(watch>0 && mx>=0.43125 && mx<=0.56875 && my>=0.8 && my<=0.84375){//game selected
-        z=10.0;
         glLoadIdentity();
         gluLookAt(0.0,0.0,5.0,
                   0.0,0.0,0.0,
                   0.0,1.0,0.0);
         game=watch;
-
     }
 
-    if(mx>=0.015625 && mx<=0.09 && my>=0.4625 && my<=0.5375) watch=(watch+((3)-1))%3;
-    else if(mx>=0.9 && mx<=0.984375 && my>=0.4625 && my<=0.5375) watch=(watch+1)%3;
+    if(mx>=0.015625 && mx<=0.09 && my>=0.4625 && my<=0.5375) watch=(watch+1)%3+1;
+    else if(mx>=0.9 && mx<=0.984375 && my>=0.4625 && my<=0.5375) watch=watch%3+1;
 }
 
 void renderscene(void) {
@@ -61,8 +60,8 @@ void renderscene(void) {
     switch(watch){
     case 0:
         glColor3f(1.0,1.0,1.0);
-        sprintf(s,"THERE IS NOTHING");
-        renderstring(-1.2,0.0,0.0,s);
+        sprintf(s,"GAME SELECTION");
+        renderstring(-1.0,0.0,0.0,s);
         break;
     case 1:
         slikar::renderscene();
@@ -76,6 +75,18 @@ void renderscene(void) {
         sprintf(s,"MBTW");
         renderstring(-0.4,2.3,0.0,s);
         break;
+    case 3:
+        slide::renderscene();
+        glColor3f(0.4,0.0,1.0);
+        sprintf(s,"SLIDE");
+        renderstring(-0.4,2.3,0.0,s);
+        break;
+    }
+
+    if(game){
+        glPopMatrix();
+        glutSwapBuffers();
+        return;
     }
 
     glColor3f(1.0,1.0,1.0);
@@ -127,11 +138,29 @@ void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌
     case 2:
         mbtw::pnk(key,x,y);
         return;
+    case 3:
+        slide::pnk(key,x,y);
+        return;
     }
 
     switch(key){
     case 27:
         exit(0);
+        break;
+    case 'a':
+    case 'A':
+        watch=(watch+1)%3+1;
+        break;
+    case 'd':
+    case 'D':
+        watch=watch%3+1;
+        break;
+    case 32:
+        glLoadIdentity();
+        gluLookAt(0.0,0.0,5.0,
+                  0.0,0.0,0.0,
+                  0.0,1.0,0.0);
+        game=watch;
         break;
     }
 }
@@ -139,11 +168,10 @@ void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌
 int main(int argc, char **argv) {
     game=0;
     scale=0.4;
-    ms=10;
-    slikar::init(0);
-    mbtw::init(0);
-
-
+    watch=0;
+    slikar::init(1);
+    mbtw::init(1);
+    slide::init(1);
 
     glutInit(&argc, argv);//초기화
 
@@ -151,7 +179,7 @@ int main(int argc, char **argv) {
 
     glutInitWindowPosition(300,100);//왼쪽 위 기준 가로 100, 세로 100 떨어진곳에 창의 온쪽 위가 위치
     glutInitWindowSize(640,640);//창의 크기(가로, 세로)
-    main_window=glutCreateWindow("SLIKAR");//창 만들기(제목)
+    glutCreateWindow("CMAKE GAMES by Kuro13314");//창 만들기(제목)
 
     glutDisplayFunc(renderscene);//렌더링할 함수를 설정
     glutIdleFunc(renderscene);//idle 상태일 때 렌더링할 함수

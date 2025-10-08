@@ -11,7 +11,7 @@
 
 using namespace std;
 
-extern int menu,ms,height,width,game,dir[4][2];
+extern int menu,height,width,game,dir[4][2];
 extern float scale,mx,my;
 
 namespace mbtw
@@ -26,14 +26,15 @@ namespace mbtw
                                { 1, 0, 1, 0, 0, 0, 0, 1, 1, 1},
                                { 1, 0, 1, 1, 1, 1, 1, 1, 2, 1},
                                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};
-    int state=0,bore=1,p[2]={0,9},turn;      //우측
+    int state=0,bore=1,p[2]={0,9},turn,ms=10;   //우측
 
     void init(int f){///나중에 여기다가 맵 랜덤 생성 알고리즘 넣기
         p[0]=0;p[1]=9;
         bore=1;
         turn=27;
         state=0;
-        if(f) return;//처음에만 실행 될 것들
+
+        if(!f) return;//처음에만 실행 될 것들
     }
 
     void ctm(int button, int ud, int x, int y){//click the mouse, up or down, x, y
@@ -48,7 +49,7 @@ namespace mbtw
             menu=0;
         }
         else if(mx>0.435 && mx<0.565 && my>0.465 && my<0.535) {// reset
-            init(1);
+            init(0);
         }
         else if(mx>0.435 && mx<0.565 && my>0.59 && my<0.66) {// exit
             exit(0);
@@ -63,7 +64,7 @@ namespace mbtw
             break;
         case 'r':
         case 'R':
-            init(1);
+            init(0);
             break;
         }
         if(state||menu) return;

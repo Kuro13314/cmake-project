@@ -46,8 +46,11 @@
 			<Add library="glu32" />
 			<Add library="gdi32" />
 		</Linker>
+		<Unit filename="base.hpp" />
 		<Unit filename="main.cpp" />
-		<Unit filename="mbtw.h" />
+		<Unit filename="mbtw.hpp" />
+		<Unit filename="slikar.cpp" />
+		<Unit filename="slikar.hpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

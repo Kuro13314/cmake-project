@@ -11,7 +11,7 @@
 
 using namespace std;
 
-extern int menu,ms,height,width,p[2],game,dir[4][2];
+extern int menu,height,width,p[2],game,dir[4][2];
 extern float scale,mx,my;
 
 namespace slikar
@@ -29,16 +29,19 @@ namespace slikar
                                              //오른쪽
 
     queue<tuple<int,int,int>> go;
-    int state=0,turn=1,p[2]={0,9};
+    int state=0,turn=1,p[2]={0,9},ms=10;
 
     void init(int f){///나중에 여기다가 맵 랜덤 생성 알고리즘 넣기
         p[0]=0;p[1]=9;
         turn=1;
+        state=0;
+
+        if(!f) return;
+
         for(int i=0;i<ms;i++)
             for(int j=0;j<ms;j++)
                 if(board[i][j]==1) go.push(make_tuple(i,j,1));
 
-        if(f) return;
         while(!go.empty()){
             auto[x,y,d]=go.front();
             go.pop();
@@ -65,13 +68,9 @@ namespace slikar
             game=0;
             menu=0;
         }
-        else if(mx>0.435 && mx<0.565 && my>0.465 && my<0.535) {// reset
-            init(1);
-        }
-        else if(mx>0.435 && mx<0.565 && my>0.59 && my<0.66) {// exit
-            exit(0);
-        }
-        else if((mx<0.318 || mx>0.68) || (my<0.317 || my>0.68)) menu=0;
+        else if(mx>0.435 && mx<0.565 && my>0.465 && my<0.535) init(0); //reset
+        else if(mx>0.435 && mx<0.565 && my>0.59 && my<0.66) exit(0);   //exit
+        else if((mx<0.318 || mx>0.68) || (my<0.317 || my>0.68)) menu=0;//menu
     }
 
     void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌표
@@ -81,10 +80,7 @@ namespace slikar
             break;
         case 'r':
         case 'R':
-            turn=1;
-            p[0]=0;
-            p[1]=9;
-            state=0;
+            init(0);
             break;
         }
         if(state||menu) return;

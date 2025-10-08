@@ -9,7 +9,7 @@
 int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
 
 int width, height;
-int menu,ms,game=0;
+int menu,game;
 float scale=0.4,z;
 float mx,my;
 char s[100];
@@ -37,7 +37,7 @@ void changesize(int w, int h) {
     gluPerspective(45,rt,1,1000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0.0,0.0,10.0,
+    gluLookAt(0.0,0.0,5.0+(5.0)*(!game),
               0.0,0.0,0.0,
               0.0,1.0,0.0);
 }
