@@ -11,11 +11,11 @@
 
 using namespace std;
 
-extern int menu,height,width,game,dir[4][2];
+extern int height,width,game,dir[4][2];
 extern float scale,mx,my;
 
 namespace mbtw
-{                                               //좌측
+{                                                  //좌측
     vector<vector<int>> board={{ 0, 0, 1, 0, 0, 0, 0, 0, 1, 0},
                                { 1, 0, 1, 1, 0, 1, 1, 0, 1, 0},
                                { 0, 0, 0, 0, 0, 0, 1, 0, 1, 0},
@@ -26,13 +26,15 @@ namespace mbtw
                                { 1, 0, 1, 0, 0, 0, 0, 1, 1, 1},
                                { 1, 0, 1, 1, 1, 1, 1, 1, 2, 1},
                                { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};
-    int state=0,bore=1,p[2]={0,9},turn,ms=10;   //우측
+    int menu,state=0,bore=1,p[2]={0,9},turn,ms=10; //우측
+    int broken[2]={-1,-1};
 
     void init(int f){///나중에 여기다가 맵 랜덤 생성 알고리즘 넣기
         p[0]=0;p[1]=9;
         bore=1;
         turn=27;
         state=0;
+        board[broken[0]][broken[1]]=1;
 
         if(!f) return;//처음에만 실행 될 것들
     }
@@ -40,7 +42,6 @@ namespace mbtw
     void ctm(int button, int ud, int x, int y){//click the mouse, up or down, x, y
         if(!menu) return;
         if(mx>0.435 && mx<0.565 && my>0.34 && my<0.41) {// menu
-            z=10.0;
             glLoadIdentity();
             gluLookAt(0.0,0.0,10.0,
                       0.0,0.0,0.0,
@@ -74,7 +75,12 @@ namespace mbtw
             p[1]++;
             if(p[1]>=ms) p[1]=ms-1;
             if(board[p[0]][p[1]]==1){
-                if(bore) bore--;
+                if(bore){
+                    bore--;
+                    board[p[0]][p[1]]=0;
+                    broken[0]=p[0];
+                    broken[1]=p[1];
+                }
                 else p[1]--;
             }
             turn--;
@@ -84,7 +90,12 @@ namespace mbtw
             p[0]--;
             if(p[0]<0) p[0]=0;
             if(board[p[0]][p[1]]==1){
-                if(bore) bore--;
+                if(bore){
+                    bore--;
+                    board[p[0]][p[1]]=0;
+                    broken[0]=p[0];
+                    broken[1]=p[1];
+                }
                 else p[0]++;
             }
             turn--;
@@ -94,7 +105,12 @@ namespace mbtw
             p[1]--;
             if(p[1]<0) p[1]=0;
             if(board[p[0]][p[1]]==1){
-                if(bore) bore--;
+                if(bore){
+                    bore--;
+                    board[p[0]][p[1]]=0;
+                    broken[0]=p[0];
+                    broken[1]=p[1];
+                }
                 else p[1]++;
             }
             turn--;
@@ -104,7 +120,12 @@ namespace mbtw
             p[0]++;
             if(p[0]>=ms) p[0]=ms-1;
             if(board[p[0]][p[1]]==1){
-                if(bore) bore--;
+                if(bore){
+                    bore--;
+                    board[p[0]][p[1]]=0;
+                    broken[0]=p[0];
+                    broken[1]=p[1];
+                }
                 else p[0]--;
             }
             turn--;

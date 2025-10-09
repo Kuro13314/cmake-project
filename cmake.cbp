@@ -49,6 +49,8 @@
 		<Unit filename="base.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="mbtw.hpp" />
+		<Unit filename="sditc.hpp" />
+		<Unit filename="slide.hpp" />
 		<Unit filename="slikar.cpp" />
 		<Unit filename="slikar.hpp" />
 		<Extensions>

@@ -1,6 +1,7 @@
 #include "slikar.hpp"
 #include "mbtw.hpp"
 #include "slide.hpp"
+#include "sditc.hpp"
 #include "base.hpp"
 #include <queue>
 #include <vector>
@@ -8,11 +9,10 @@
 
 using namespace std;
 
-extern int menu,p[2],game,dir[4][2];
-extern float scale,mx,my,z;
+extern float scale,mx,my;
 extern int width, height;
 
-int watch;
+int watch,menu=0;
 /*
 0 : main menu
 1 : slikar
@@ -38,6 +38,9 @@ void ctm(int button, int ud, int x, int y){//click the mouse, up or down, x, y
     case 3:
         slide::ctm(button,ud,x,y);
         return;
+    case 4:
+        sditc::ctm(button,ud,x,y);
+        return;
     }
 
     if(watch>0 && mx>=0.43125 && mx<=0.56875 && my>=0.8 && my<=0.84375){//game selected
@@ -48,8 +51,8 @@ void ctm(int button, int ud, int x, int y){//click the mouse, up or down, x, y
         game=watch;
     }
 
-    if(mx>=0.015625 && mx<=0.09 && my>=0.4625 && my<=0.5375) watch=(watch+1)%3+1;
-    else if(mx>=0.9 && mx<=0.984375 && my>=0.4625 && my<=0.5375) watch=watch%3+1;
+    if(mx>=0.015625 && mx<=0.09 && my>=0.4625 && my<=0.5375) watch=(watch+2)%4+1;
+    else if(mx>=0.9 && mx<=0.984375 && my>=0.4625 && my<=0.5375) watch=watch%4+1;
 }
 
 void renderscene(void) {
@@ -79,6 +82,12 @@ void renderscene(void) {
         slide::renderscene();
         glColor3f(0.4,0.0,1.0);
         sprintf(s,"SLIDE");
+        renderstring(-0.4,2.3,0.0,s);
+        break;
+    case 4:
+        sditc::renderscene();
+        glColor3f(1.0,0.8,0.0);
+        sprintf(s,"SDITC");
         renderstring(-0.4,2.3,0.0,s);
         break;
     }
@@ -141,21 +150,25 @@ void pnk(unsigned char key, int x, int y) {//눌린 키, 키가 눌렸을 때의 마우스 좌
     case 3:
         slide::pnk(key,x,y);
         return;
+    case 4:
+        sditc::pnk(key,x,y);
+        return;
     }
 
     switch(key){
     case 27:
-        exit(0);
+        menu=(menu+1)%2;
         break;
     case 'a':
     case 'A':
-        watch=(watch+1)%3+1;
+        watch=(watch+2)%4+1;
         break;
     case 'd':
     case 'D':
-        watch=watch%3+1;
+        watch=watch%4+1;
         break;
     case 32:
+        if(watch<=0)break;
         glLoadIdentity();
         gluLookAt(0.0,0.0,5.0,
                   0.0,0.0,0.0,
@@ -172,6 +185,7 @@ int main(int argc, char **argv) {
     slikar::init(1);
     mbtw::init(1);
     slide::init(1);
+    sditc::init(1);
 
     glutInit(&argc, argv);//초기화
 

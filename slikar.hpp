@@ -11,7 +11,7 @@
 
 using namespace std;
 
-extern int menu,height,width,p[2],game,dir[4][2];
+extern int height,width,p[2],game,dir[4][2];
 extern float scale,mx,my;
 
 namespace slikar
@@ -29,7 +29,7 @@ namespace slikar
                                              //오른쪽
 
     queue<tuple<int,int,int>> go;
-    int state=0,turn=1,p[2]={0,9},ms=10;
+    int menu,state=0,turn=1,p[2]={0,9},ms=10;
 
     void init(int f){///나중에 여기다가 맵 랜덤 생성 알고리즘 넣기
         p[0]=0;p[1]=9;
@@ -60,7 +60,6 @@ namespace slikar
     void ctm(int button, int ud, int x, int y){//click the mouse, up or down, x, y
         if(!menu) return;
         if(mx>0.435 && mx<0.565 && my>0.34 && my<0.41) {// menu
-            z=10.0;
             glLoadIdentity();
             gluLookAt(0.0,0.0,10.0,
                       0.0,0.0,0.0,

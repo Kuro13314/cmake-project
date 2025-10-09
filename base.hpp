@@ -9,8 +9,8 @@
 int dir[4][2]={{0,1},{0,-1},{1,0},{-1,0}};
 
 int width, height;
-int menu,game;
-float scale=0.4,z;
+int game;
+float scale=0.4;
 float mx,my;
 char s[100];
 

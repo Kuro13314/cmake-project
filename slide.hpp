@@ -11,11 +11,11 @@
 
 using namespace std;
 
-extern int menu,height,width,game,dir[4][2];
+extern int height,width,game,dir[4][2];
 extern float scale,mx,my;
 
 namespace slide
-{                                            //좌측
+{                                              //좌측
     vector<vector<int>> board={{1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                                {1, 0, 0, 0, 0, 0, 1, 0, 3, 1},
                                {1, 0, 1, 1, 1, 0, 1, 0, 1, 1},
@@ -26,7 +26,7 @@ namespace slide
                                {0, 1, 1, 1, 1, 1, 1, 1, 1, 1},
                                {0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-    int state=0,ms=10;                       //우측
+    int state=0,ms=10,menu;                    //우측
     vector<tuple<int,int,int>> ball={{1,8,3},{8,8,4}};
 
     void init(int f){///나중에 여기다가 맵 랜덤 생성 알고리즘 넣기
@@ -43,7 +43,6 @@ namespace slide
     void ctm(int button, int ud, int x, int y){//click the mouse, up or down, x, y
         if(!menu) return;
         if(mx>0.435 && mx<0.565 && my>0.34 && my<0.41) {// menu
-            z=10.0;
             glLoadIdentity();
             gluLookAt(0.0,0.0,10.0,
                       0.0,0.0,0.0,
@@ -176,14 +175,6 @@ namespace slide
             renderstring(-0.3,0.0,0.1,s);
         }
         if(menu) menuopen();
-
-        glColor3f(1.0,1.0,0.0);
-        sprintf(s,"r  : %.2f",r);
-        renderstring(-1.8,-1.4,0.1,s);
-        sprintf(s,"g : %.2f",g);
-        renderstring(-1.8,-1.6,0.1,s);
-        sprintf(s,"b : %.2f",b);
-        renderstring(-1.8,-1.8,0.1,s);
 
         for(int i=0;i<10;i++){
             for(int j=0;j<10;j++){
